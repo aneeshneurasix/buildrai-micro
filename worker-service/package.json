@@ -1,0 +1,27 @@
+{
+  "name": "@codstack/worker-service",
+  "version": "2.0.0",
+  "description": "Background Worker Service for Codstack",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.1093.0",
+    "@codstack/shared": "file:../shared",
+    "bullmq": "^5.81.1",
+    "ioredis": "^5.11.1",
+    "mongoose": "^9.6.2",
+    "winston": "^3.19.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "tsx": "^4.7.0"
+  }
+}

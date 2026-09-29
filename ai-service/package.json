@@ -1,0 +1,45 @@
+{
+  "name": "@codstack/ai-service",
+  "version": "2.0.0",
+  "description": "AI & Code Generation Service for Codstack",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "lint": "eslint src --ext .ts",
+    "test": "jest",
+    "docker:build": "docker build -t codstack-ai-service .",
+    "docker:run": "docker run -p 4000:4000 --env-file .env codstack-ai-service"
+  },
+  "keywords": ["ai", "code-generation", "bedrock", "claude"],
+  "author": "Codstack Team",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.645.0",
+    "@codstack/shared": "file:../shared",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "mongoose": "^9.6.2",
+    "ioredis": "^5.11.1",
+    "winston": "^3.19.0",
+    "express-rate-limit": "^7.1.5",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^4.4.3",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/compression": "^1.7.5",
+    "@types/node": "^20.0.0",
+    "@types/jsonwebtoken": "^9.0.5",
+    "typescript": "^5.0.0",
+    "tsx": "^4.7.0",
+    "eslint": "^9.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  }
+}

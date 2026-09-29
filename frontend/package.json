@@ -1,0 +1,41 @@
+{
+  "name": "@codstack/frontend",
+  "version": "2.0.0",
+  "description": "Frontend application for Codstack (S3 + CloudFront deployment)",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "build:static": "next build && next export",
+    "start": "next start",
+    "lint": "next lint",
+    "deploy:s3": "aws s3 sync out/ s3://$S3_BUCKET --delete",
+    "deploy:invalidate": "aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths '/*'",
+    "deploy": "npm run build:static && npm run deploy:s3 && npm run deploy:invalidate"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^7.3.5",
+    "@monaco-editor/react": "^4.7.0",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@xterm/xterm": "^6.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.16.0",
+    "next": "16.2.6",
+    "next-themes": "^0.4.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
