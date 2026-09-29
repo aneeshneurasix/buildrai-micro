@@ -11,12 +11,13 @@ terraform {
     }
   }
 
+  # Backend configuration - S3 with state locking
   backend "s3" {
-    bucket         = "codstack-terraform-state"
+    bucket         = "builderai-terraform-state"
     key            = "microservices/terraform.tfstate"
     region         = "ap-south-1"
     encrypt        = true
-    dynamodb_table = "codstack-terraform-locks"
+    dynamodb_table = "builderai-terraform-locks"
   }
 }
 
@@ -48,16 +49,24 @@ locals {
 module "vpc" {
   source = "./modules/vpc"
 
-  name_prefix         = local.name_prefix
-  vpc_cidr            = var.vpc_cidr
-  availability_zones  = var.availability_zones
-  public_subnet_cidrs = var.public_subnet_cidrs
+  project_name         = var.project_name
+  environment          = var.environment
+  aws_region           = var.aws_region
+  vpc_cidr             = var.vpc_cidr
+  availability_zones   = var.availability_zones
+  public_subnet_cidrs  = var.public_subnet_cidrs
   private_subnet_cidrs = var.private_subnet_cidrs
-
-  tags = local.common_tags
 }
 
-# Amazon Bedrock with VPC Endpoint (before ECS to provide IAM policy)
+# ECR Repository for Docker Images
+module "ecr" {
+  source = "./modules/ecr"
+
+  repository_name = "${var.project_name}-services"
+  environment     = var.environment
+}
+
+# Amazon Bedrock with VPC Endpoint
 module "bedrock" {
   source = "./modules/bedrock"
 
@@ -69,115 +78,79 @@ module "bedrock" {
   private_subnet_cidrs = var.private_subnet_cidrs
 }
 
-# ECS Cluster
-module "ecs" {
-  source = "./modules/ecs"
+# Commenting out modules with dependencies - will deploy in phases
+# Phase 1: VPC + ECR + Bedrock (essentials)
+# Phase 2: Redis + ECS + ALB (requires ECS security groups)
 
-  name_prefix = local.name_prefix
-  vpc_id      = module.vpc.vpc_id
+# # ElastiCache Redis
+# module "redis" {
+#   source = "./modules/redis"
+#   ...
+# }
+#
+# Once we have Docker images in ECR, we'll enable ECS and ALB
 
-  # Subnets
-  private_subnet_ids = module.vpc.private_subnet_ids
-  public_subnet_ids  = module.vpc.public_subnet_ids
+# # ECS Cluster
+# module "ecs" {
+#   source = "./modules/ecs"
+#   ...
+# }
+#
+# # Application Load Balancer
+# module "alb" {
+#   source = "./modules/alb"
+#   ...
+# }
+#
+# # S3 + CloudFront for Frontend
+# module "s3_cloudfront" {
+#   source = "./modules/s3-cloudfront"
+#   ...
+# }
 
-  # Bedrock permissions
-  bedrock_policy_arn = module.bedrock.bedrock_access_policy_arn
+# Secrets Manager - Secrets already created manually via AWS CLI
+# module "secrets" {
+#   source = "./modules/secrets"
+#
+#   name_prefix = local.name_prefix
+#   secrets     = var.secrets_config
+#
+#   tags = local.common_tags
+# }
 
-  # Services configuration
-  services = var.ecs_services
+# CloudWatch Monitoring - Basic monitoring via ECS Container Insights
+# Can be enhanced with custom dashboards later
+# module "monitoring" {
+#   source = "./modules/monitoring"
+#
+#   name_prefix  = local.name_prefix
+#   cluster_name = module.ecs.cluster_name
+#   services     = keys(var.ecs_services)
+#
+#   alarm_email = var.alarm_email
+#
+#   tags = local.common_tags
+# }
 
-  tags = local.common_tags
-}
-
-# Application Load Balancer
-module "alb" {
-  source = "./modules/alb"
-
-  name_prefix        = local.name_prefix
-  vpc_id             = module.vpc.vpc_id
-  public_subnet_ids  = module.vpc.public_subnet_ids
-
-  # SSL Certificate
-  certificate_arn = var.acm_certificate_arn
-
-  # Target groups
-  target_groups = var.alb_target_groups
-
-  tags = local.common_tags
-}
-
-# S3 + CloudFront for Frontend
-module "s3_cloudfront" {
-  source = "./modules/s3-cloudfront"
-
-  name_prefix     = local.name_prefix
-  domain_name     = var.domain_name
-  certificate_arn = var.acm_certificate_arn
-
-  tags = local.common_tags
-}
-
-# ElastiCache Redis
-module "redis" {
-  source = "./modules/redis"
-
-  name_prefix        = local.name_prefix
-  vpc_id             = module.vpc.vpc_id
-  private_subnet_ids = module.vpc.private_subnet_ids
-
-  node_type = var.redis_node_type
-
-  tags = local.common_tags
-}
-
-# Secrets Manager
-module "secrets" {
-  source = "./modules/secrets"
-
-  name_prefix = local.name_prefix
-  secrets     = var.secrets_config
-
-  tags = local.common_tags
-}
-
-# CloudWatch Monitoring
-module "monitoring" {
-  source = "./modules/monitoring"
-
-  name_prefix  = local.name_prefix
-  cluster_name = module.ecs.cluster_name
-  services     = keys(var.ecs_services)
-
-  alarm_email = var.alarm_email
-
-  tags = local.common_tags
-}
-
-# Outputs
+# Outputs - Phase 1
 output "vpc_id" {
   description = "VPC ID"
   value       = module.vpc.vpc_id
 }
 
-output "ecs_cluster_name" {
-  description = "ECS Cluster Name"
-  value       = module.ecs.cluster_name
+output "private_subnet_ids" {
+  description = "Private Subnet IDs"
+  value       = module.vpc.private_subnet_ids
 }
 
-output "alb_dns_name" {
-  description = "ALB DNS Name"
-  value       = module.alb.dns_name
+output "public_subnet_ids" {
+  description = "Public Subnet IDs"
+  value       = module.vpc.public_subnet_ids
 }
 
-output "cloudfront_domain" {
-  description = "CloudFront Distribution Domain"
-  value       = module.s3_cloudfront.cloudfront_domain
-}
-
-output "redis_endpoint" {
-  description = "Redis Endpoint"
-  value       = module.redis.endpoint
-  sensitive   = true
+output "ecr_repository_url" {
+  description = "ECR Repository URL for Docker images"
+  value       = module.ecr.repository_url
 }
 
 output "bedrock_vpc_endpoint_id" {
@@ -189,3 +162,11 @@ output "bedrock_policy_arn" {
   description = "IAM Policy ARN for Bedrock access"
   value       = module.bedrock.bedrock_access_policy_arn
 }
+
+# Phase 2 outputs (commented for now)
+# output "redis_endpoint" {
+#   value = module.redis.redis_connection_string
+# }
+# output "alb_dns_name" {
+#   value = module.alb.dns_name
+# }

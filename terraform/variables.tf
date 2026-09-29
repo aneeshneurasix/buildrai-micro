@@ -1,7 +1,8 @@
-# Terraform Variables for Codstack Microservices
+# Terraform Variables for BuildeRAI Microservices
+# Follows AWS naming best practices and tagging standards
 
 variable "aws_region" {
-  description = "AWS Region"
+  description = "AWS Region for deployment"
   type        = string
   default     = "ap-south-1"
 }
@@ -9,30 +10,36 @@ variable "aws_region" {
 variable "aws_profile" {
   description = "AWS CLI Profile"
   type        = string
-  default     = "aneesh-personal"
+  default     = "buildrai-aws"
 }
 
 variable "project_name" {
-  description = "Project name"
+  description = "Project name (used for resource naming and tags)"
   type        = string
-  default     = "codstack"
+  default     = "builderai"
 }
 
 variable "environment" {
-  description = "Environment (dev, staging, prod)"
+  description = "Environment (dev, staging, production)"
   type        = string
-  default     = "prod"
+  default     = "production"
+
+  validation {
+    condition     = contains(["dev", "staging", "production"], var.environment)
+    error_message = "Environment must be dev, staging, or production."
+  }
 }
 
 variable "domain_name" {
   description = "Domain name for the application"
   type        = string
-  default     = "codstack.com"
+  default     = "builderai.app"
 }
 
 variable "acm_certificate_arn" {
-  description = "ACM Certificate ARN for HTTPS"
+  description = "ACM Certificate ARN for HTTPS (leave empty for HTTP only)"
   type        = string
+  default     = ""
 }
 
 # VPC Configuration
@@ -170,4 +177,5 @@ variable "secrets_config" {
 variable "alarm_email" {
   description = "Email for CloudWatch alarms"
   type        = string
+  default     = "alerts@builderai.app"
 }
