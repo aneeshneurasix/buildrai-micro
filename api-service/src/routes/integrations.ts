@@ -13,7 +13,7 @@ import {
   Integration,
   encrypt,
   decrypt,
-} from '@buildr/shared';
+} from '@codstack/shared';
 
 const router = Router();
 

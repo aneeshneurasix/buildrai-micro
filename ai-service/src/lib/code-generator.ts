@@ -1,7 +1,7 @@
 import { createChatCompletion } from './client';
 import { DEFAULT_MODEL_ID } from './models';
 import { buildContextWindow } from './token-optimizer';
-import { logger } from '@buildr/shared';
+import { logger } from '@codstack/shared';
 
 export interface GeneratedFile {
   path: string;

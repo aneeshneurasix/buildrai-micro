@@ -11,7 +11,7 @@ import {
   logger,
   loggers,
   Project,
-} from '@buildr/shared';
+} from '@codstack/shared';
 import { generateCode } from '../lib/code-generator';
 import { VALID_MODEL_IDS, DEFAULT_MODEL_ID } from '../lib/models';
 import { canUseAI, trackAIUsage } from '../lib/usage-tracker';

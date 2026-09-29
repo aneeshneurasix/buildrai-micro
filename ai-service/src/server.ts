@@ -13,7 +13,7 @@ import {
   loggers,
   errorHandler,
   notFoundHandler,
-} from '@buildr/shared';
+} from '@codstack/shared';
 import routes from './routes';
 
 const app: Application = express();

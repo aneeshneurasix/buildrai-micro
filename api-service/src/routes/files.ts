@@ -11,7 +11,7 @@ import {
   NotFoundError,
   logger,
   Project,
-} from '@buildr/shared';
+} from '@codstack/shared';
 import crypto from 'crypto';
 
 const router = Router();

@@ -12,7 +12,7 @@ import {
   NotFoundError,
   logger,
   User,
-} from '@buildr/shared';
+} from '@codstack/shared';
 
 const router = Router();
 

@@ -5,7 +5,7 @@
 
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { Queue, Worker, Job } from 'bullmq';
-import { logger, getRedisClient } from '@buildr/shared';
+import { logger, getRedisClient } from '@codstack/shared';
 
 const sesClient = new SESClient({
   region: process.env.AWS_REGION || 'ap-south-1',

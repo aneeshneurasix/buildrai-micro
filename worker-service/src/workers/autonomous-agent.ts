@@ -8,7 +8,7 @@ import {
   logger,
   TaskQueue,
   Project,
-} from '@buildr/shared';
+} from '@codstack/shared';
 import crypto from 'crypto';
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://ai-service:4000';

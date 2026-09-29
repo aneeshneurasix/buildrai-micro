@@ -13,7 +13,7 @@ import {
   logger,
   Project,
   User,
-} from '@buildr/shared';
+} from '@codstack/shared';
 
 const router = Router();
 

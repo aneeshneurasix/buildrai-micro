@@ -4,7 +4,7 @@
  */
 
 import axios from 'axios';
-import { logger } from '@buildr/shared';
+import { logger } from '@codstack/shared';
 
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://auth-service:4001';
 const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY;

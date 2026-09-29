@@ -11,7 +11,7 @@ import {
   logger,
   ChatSession,
   Project,
-} from '@buildr/shared';
+} from '@codstack/shared';
 import { createChatCompletion } from '../lib/client';
 import { DEFAULT_MODEL_ID } from '../lib/models';
 import { buildContextWindow } from '../lib/token-optimizer';

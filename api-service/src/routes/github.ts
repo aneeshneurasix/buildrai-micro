@@ -16,7 +16,7 @@ import {
   Integration,
   encrypt,
   decrypt,
-} from '@buildr/shared';
+} from '@codstack/shared';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';

@@ -10,7 +10,7 @@ import {
   logger,
   User,
   generateToken,
-} from '@buildr/shared';
+} from '@codstack/shared';
 
 const router = Router();
 

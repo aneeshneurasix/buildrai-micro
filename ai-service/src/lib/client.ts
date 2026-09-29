@@ -10,7 +10,7 @@ import {
   InvokeModelCommandInput,
 } from '@aws-sdk/client-bedrock-runtime';
 import { getModelById } from './models';
-import { logger } from '@buildr/shared';
+import { logger } from '@codstack/shared';
 
 // Cached Bedrock client
 let bedrockClient: BedrockRuntimeClient | null = null;

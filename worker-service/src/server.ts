@@ -8,7 +8,7 @@ import {
   connectDatabase,
   connectRedis,
   logger,
-} from '@buildr/shared';
+} from '@codstack/shared';
 import { autonomousAgent } from './workers/autonomous-agent';
 import { emailWorker } from './workers/email-worker';
 
