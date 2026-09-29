@@ -78,9 +78,22 @@ module "bedrock" {
   private_subnet_cidrs = var.private_subnet_cidrs
 }
 
+# AWS CodePipeline for CI/CD
+module "codepipeline" {
+  source = "./modules/codepipeline"
+
+  project_name          = var.project_name
+  environment           = var.environment
+  aws_region            = var.aws_region
+  ecr_repository_url    = module.ecr.repository_url
+  github_connection_arn = "arn:aws:codestar-connections:ap-south-1:120594650992:connection/5bbe391e-7ecf-4fc3-9e4f-61f99cb4b129"
+  github_repository     = "aneeshneurasix/buildrai-micro"
+  github_branch         = "main"
+}
+
 # Commenting out modules with dependencies - will deploy in phases
-# Phase 1: VPC + ECR + Bedrock (essentials)
-# Phase 2: Redis + ECS + ALB (requires ECS security groups)
+# Phase 1: VPC + ECR + Bedrock + CodePipeline (essentials + CI/CD)
+# Phase 2: Redis + ECS + ALB (requires Docker images in ECR)
 
 # # ElastiCache Redis
 # module "redis" {
@@ -161,6 +174,26 @@ output "bedrock_vpc_endpoint_id" {
 output "bedrock_policy_arn" {
   description = "IAM Policy ARN for Bedrock access"
   value       = module.bedrock.bedrock_access_policy_arn
+}
+
+output "pipeline_name" {
+  description = "CodePipeline name"
+  value       = module.codepipeline.pipeline_name
+}
+
+output "pipeline_arn" {
+  description = "CodePipeline ARN"
+  value       = module.codepipeline.pipeline_arn
+}
+
+output "codebuild_project_name" {
+  description = "CodeBuild project name"
+  value       = module.codepipeline.codebuild_project_name
+}
+
+output "artifacts_bucket" {
+  description = "S3 bucket for CodePipeline artifacts"
+  value       = module.codepipeline.artifacts_bucket
 }
 
 # Phase 2 outputs (commented for now)
