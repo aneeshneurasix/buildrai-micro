@@ -15,12 +15,15 @@ RUN npm install --omit=dev
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy shared package
+# Copy and build shared package first
 COPY shared/ ./shared/
+WORKDIR /app/shared
+RUN npm install
+RUN npm run build
 
-# Copy source and package.json
+# Copy service source and package.json
+WORKDIR /app
 COPY auth-service/ ./auth-service/
-
 WORKDIR /app/auth-service
 
 # Install ALL dependencies (including dev dependencies for build)
