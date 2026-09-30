@@ -18,11 +18,13 @@ WORKDIR /app
 # Copy shared package
 COPY shared/ ./shared/
 
-# Copy dependencies and source
-COPY --from=deps /app/worker-service/node_modules ./worker-service/node_modules
+# Copy source and package.json
 COPY worker-service/ ./worker-service/
 
 WORKDIR /app/worker-service
+
+# Install ALL dependencies (including dev dependencies for build)
+RUN npm install
 
 # Build TypeScript
 ENV NODE_ENV=production

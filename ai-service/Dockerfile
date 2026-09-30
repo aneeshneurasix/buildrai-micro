@@ -21,11 +21,13 @@ WORKDIR /app
 # Copy shared package
 COPY shared/ ./shared/
 
-# Copy dependencies and source
-COPY --from=deps /app/ai-service/node_modules ./ai-service/node_modules
+# Copy source and package.json
 COPY ai-service/ ./ai-service/
 
 WORKDIR /app/ai-service
+
+# Install ALL dependencies (including dev dependencies for build)
+RUN npm install
 
 # Build TypeScript
 ENV NODE_ENV=production

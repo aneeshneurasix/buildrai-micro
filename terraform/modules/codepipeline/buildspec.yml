@@ -15,24 +15,16 @@ phases:
   build:
     commands:
       - echo "Building Docker images for all services..."
-      - echo "Build context: repository root (to access shared package)"
-
-      # Build AI Service
+      - echo "Build context is repository root to access shared package"
       - echo "Building AI Service..."
       - docker build -t $ECR_REPOSITORY_URL:ai-service-$IMAGE_TAG -f ai-service/Dockerfile .
       - docker tag $ECR_REPOSITORY_URL:ai-service-$IMAGE_TAG $ECR_REPOSITORY_URL:ai-service-latest
-
-      # Build Auth Service
       - echo "Building Auth Service..."
       - docker build -t $ECR_REPOSITORY_URL:auth-service-$IMAGE_TAG -f auth-service/Dockerfile .
       - docker tag $ECR_REPOSITORY_URL:auth-service-$IMAGE_TAG $ECR_REPOSITORY_URL:auth-service-latest
-
-      # Build Worker Service
       - echo "Building Worker Service..."
       - docker build -t $ECR_REPOSITORY_URL:worker-service-$IMAGE_TAG -f worker-service/Dockerfile .
       - docker tag $ECR_REPOSITORY_URL:worker-service-$IMAGE_TAG $ECR_REPOSITORY_URL:worker-service-latest
-
-      # Build API Service
       - echo "Building API Service..."
       - docker build -t $ECR_REPOSITORY_URL:api-service-$IMAGE_TAG -f api-service/Dockerfile .
       - docker tag $ECR_REPOSITORY_URL:api-service-$IMAGE_TAG $ECR_REPOSITORY_URL:api-service-latest
@@ -40,23 +32,14 @@ phases:
   post_build:
     commands:
       - echo "Pushing Docker images to ECR..."
-
-      # Push AI Service
       - docker push $ECR_REPOSITORY_URL:ai-service-$IMAGE_TAG
       - docker push $ECR_REPOSITORY_URL:ai-service-latest
-
-      # Push Auth Service
       - docker push $ECR_REPOSITORY_URL:auth-service-$IMAGE_TAG
       - docker push $ECR_REPOSITORY_URL:auth-service-latest
-
-      # Push Worker Service
       - docker push $ECR_REPOSITORY_URL:worker-service-$IMAGE_TAG
       - docker push $ECR_REPOSITORY_URL:worker-service-latest
-
-      # Push API Service
       - docker push $ECR_REPOSITORY_URL:api-service-$IMAGE_TAG
       - docker push $ECR_REPOSITORY_URL:api-service-latest
-
       - echo "Build completed on `date`"
       - echo "Images pushed with tag $IMAGE_TAG and latest"
 
