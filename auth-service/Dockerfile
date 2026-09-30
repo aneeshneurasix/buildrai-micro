@@ -1,28 +1,45 @@
 # Multi-stage build for Auth Service
+# Build context must be the repository root to access shared package
 
 FROM node:20-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci --only=production
+
+# Copy shared package first
+COPY shared/ ./shared/
+
+# Copy service package.json and install
+COPY auth-service/package.json ./auth-service/
+WORKDIR /app/auth-service
+RUN npm install --omit=dev
 
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+
+# Copy shared package
+COPY shared/ ./shared/
+
+# Copy dependencies and source
+COPY --from=deps /app/auth-service/node_modules ./auth-service/node_modules
+COPY auth-service/ ./auth-service/
+
+WORKDIR /app/auth-service
+
+# Build TypeScript
 ENV NODE_ENV=production
 RUN npm run build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
+
 ENV NODE_ENV=production
 ENV PORT=4001
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 authservice
 
-COPY --from=builder --chown=authservice:nodejs /app/dist ./dist
-COPY --from=builder --chown=authservice:nodejs /app/node_modules ./node_modules
-COPY --chown=authservice:nodejs package.json ./
+COPY --from=builder --chown=authservice:nodejs /app/auth-service/dist ./dist
+COPY --from=builder --chown=authservice:nodejs /app/auth-service/node_modules ./node_modules
+COPY --from=builder --chown=authservice:nodejs /app/auth-service/package.json ./package.json
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "require('http').get('http://localhost:4001/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"

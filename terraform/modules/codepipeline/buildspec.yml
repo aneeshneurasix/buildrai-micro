@@ -15,37 +15,26 @@ phases:
   build:
     commands:
       - echo "Building Docker images for all services..."
+      - echo "Build context: repository root (to access shared package)"
 
       # Build AI Service
       - echo "Building AI Service..."
-      - cd ai-service
-      - npm install
-      - cd ..
-      - docker build -t $ECR_REPOSITORY_URL:ai-service-$IMAGE_TAG -f ai-service/Dockerfile ai-service/
+      - docker build -t $ECR_REPOSITORY_URL:ai-service-$IMAGE_TAG -f ai-service/Dockerfile .
       - docker tag $ECR_REPOSITORY_URL:ai-service-$IMAGE_TAG $ECR_REPOSITORY_URL:ai-service-latest
 
       # Build Auth Service
       - echo "Building Auth Service..."
-      - cd auth-service
-      - npm install
-      - cd ..
-      - docker build -t $ECR_REPOSITORY_URL:auth-service-$IMAGE_TAG -f auth-service/Dockerfile auth-service/
+      - docker build -t $ECR_REPOSITORY_URL:auth-service-$IMAGE_TAG -f auth-service/Dockerfile .
       - docker tag $ECR_REPOSITORY_URL:auth-service-$IMAGE_TAG $ECR_REPOSITORY_URL:auth-service-latest
 
       # Build Worker Service
       - echo "Building Worker Service..."
-      - cd worker-service
-      - npm install
-      - cd ..
-      - docker build -t $ECR_REPOSITORY_URL:worker-service-$IMAGE_TAG -f worker-service/Dockerfile worker-service/
+      - docker build -t $ECR_REPOSITORY_URL:worker-service-$IMAGE_TAG -f worker-service/Dockerfile .
       - docker tag $ECR_REPOSITORY_URL:worker-service-$IMAGE_TAG $ECR_REPOSITORY_URL:worker-service-latest
 
       # Build API Service
       - echo "Building API Service..."
-      - cd api-service
-      - npm install
-      - cd ..
-      - docker build -t $ECR_REPOSITORY_URL:api-service-$IMAGE_TAG -f api-service/Dockerfile api-service/
+      - docker build -t $ECR_REPOSITORY_URL:api-service-$IMAGE_TAG -f api-service/Dockerfile .
       - docker tag $ECR_REPOSITORY_URL:api-service-$IMAGE_TAG $ECR_REPOSITORY_URL:api-service-latest
 
   post_build:
